@@ -22,6 +22,7 @@ install: os $(PIP)
 
 .PHONY: update
 update: os $(PIP)
+	git pull
 	$(PIP) install -U -r requirements.txt
 	$(MAKE) requirements.txt
 
