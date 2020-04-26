@@ -1,10 +1,10 @@
 #  OGP
 ## State Machine and Object Graph Programming
 
-shared project with Valeri Rakitine on State Machine and Object Graph Programming
+shared project with Valeri Rakitine on the [eco-programming course](http://www.evaclick.ca/courses/course_01_eco-programming/)
 
-* (c) Dmitry Ponyatov <<dponyatov@gmail.com>>
 * (c) Valeri Rakitine https://www.linkedin.com/in/valrakitine/
+* (c) Dmitry Ponyatov <<dponyatov@gmail.com>>
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ponyatov/OGP/master?filepath=OGP.ipynb)
 
