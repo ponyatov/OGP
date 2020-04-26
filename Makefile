@@ -44,13 +44,11 @@ endif
 .PHONY: debian
 debian:
 	sudo apt update
-	sudo apt install -u \
-		make git \
-		python3 python3-venv
+	sudo apt install -u `cat apt.txt`
 
 .PHONY: master shadow release zip
 
-MERGE  = Makefile README.md .gitignore .vscode
+MERGE  = Makefile README.md .gitignore .vscode apt.txt
 MERGE += requirements.txt $(MODULE).ipynb
 
 master:

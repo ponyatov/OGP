@@ -1,0 +1,2 @@
+make git
+python3 python3-venv
