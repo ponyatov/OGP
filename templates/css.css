@@ -1,0 +1,22 @@
+* {
+    color: lightgreen;
+    background: black;
+    font-family: monospace;
+    font-size: 4mm;
+}
+
+#cli {
+    position: absolute;
+    bottom: 0;
+}
+
+#cli,
+#pad,
+#go {
+    width: 99%;
+}
+
+#go {
+    color: white;
+    background: darkblue;
+}
