@@ -239,12 +239,12 @@ class Email(Net, Primitive):
 
 import flask
 
+app = flask.Flask(self.val)
+app.config['SECRET_KEY'] = os.urandom(32)
+
 class Web(Net):
 
     def eval(self, ctx):
-
-        app = flask.Flask(self.val)
-        app.config['SECRET_KEY'] = os.urandom(32)
 
         @app.route('/')
         def index():
