@@ -261,9 +261,9 @@ class Web(Net):
         def statics(path):
             return app.send_static_file(path)
 
-        app.run(
-            host=ctx['IP'].val, port=ctx['PORT'].val,
-            debug=True, extra_files=['metaL.ini'])
+        # app.run(
+        #     host=ctx['IP'].val, port=ctx['PORT'].val,
+        #     debug=True, extra_files=['metaL.ini'])
 
 def WEB(that, ctx):
     web = ctx['WEB'] = Web(that.val)
@@ -281,7 +281,7 @@ tokens = ['symbol', 'string',
           'number', 'integer', 'hex', 'bin',
           'eq', 'tick', 'push', 'lshift', 'rshift', 'colon',
           'url', 'email', 'ip',
-          'nl',]
+          'nl', ]
 
 t_ignore = ' \t\r'
 t_ignore_comment = r'\#.*'
@@ -434,3 +434,7 @@ if __name__ == '__main__':
     for srcfile in sys.argv[1:]:
         with open(srcfile) as src:
             parser.parse(src.read())
+    app.run(
+        host=vm['IP'].val, port=vm['PORT'].val,
+        debug=True, extra_files=['metaL.ini']
+    )
