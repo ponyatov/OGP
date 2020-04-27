@@ -239,7 +239,7 @@ class Email(Net, Primitive):
 
 import flask
 
-app = flask.Flask(self.val)
+app = flask.Flask(vm.val)
 app.config['SECRET_KEY'] = os.urandom(32)
 
 class Web(Net):
