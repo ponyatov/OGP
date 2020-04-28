@@ -1,0 +1,30 @@
+digraph {
+    rankdir=LR;
+    source [label="source\ncode",shape=rectangle];
+    source -> lexer [label="ascii text\nchar stream"];
+
+    subgraph cluster_F {
+        label=frontend;
+        lexer -> parser [label="tokens\ntyped char groups"];
+        parser -> semantic [label="AST: abstract\nsyntax tree"];
+        semantic [label="semantic\nanalizer"];
+        semantic -> optimizer [label="program\ngraph"];
+    }
+
+    subgraph cluster_B {
+        label=backend;
+        optimizer -> codegen [label=IR]
+    }
+    codegen -> obj [label="machine code"];
+    obj [label="object\nfile",shape=rectangle];
+
+    {
+        rank=same;
+        source; obj;
+    }
+
+    {
+        rank=same;
+//        lexer; codegen;
+    }
+}

@@ -100,6 +100,28 @@ class Object: # ex. Frame
 
     ########################################### stack operations
 
+    # ( 1 2 3 -- 1 2 3 ) -> 3
+    def top(self): return self.nest[-1]
+    # ( 1 2 3 -- 1 2 3 ) -> 2
+    def tip(self): return self.nest[-2]
+    # ( 1 2 3 -- 1 2 ) -> 3
+    def pop(self): return self.nest.pop(-1)
+    # ( 1 2 3 -- 1 3 ) -> 2
+    def pip(self): return self.nest.pop(-2)
+
+    # ( 1 2 3 -- 1 2 3 3 )
+    def dup(self): return self // self.top()
+    # ( 1 2 3 -- 1 2 )
+    def drop(self): self.pop(); return self
+    # ( 1 2 3 -- 1 3 2 )
+    def swap(self): return self // self.pip()
+    # ( 1 2 3 -- 1 2 3 2 )
+    def over(self): return self // self.tip()
+    # ( 1 2 3 -- 1 3 )
+    def press(self): self.pip(); return self
+    # ( 1 2 3 -- )
+    def dot(self): self.nest = []; return self
+
     ########################################### pattern matching
 
     def __iter__(self):

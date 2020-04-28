@@ -60,6 +60,8 @@ MERGE  = Makefile README.md .gitignore .vscode apt.txt
 MERGE += requirements.txt $(MODULE).ipynb
 MERGE += metaL.py metaL.ini static templates
 MERGE += pythonanywhere uwsgi.ini
+MERGE += requirements.jupyter requirements.anywhere
+MERGE += img
 
 master:
 	git checkout $@
@@ -75,3 +77,12 @@ release:
 
 zip:
 	git archive --format zip --output $(MODULE)_src_$(NOW)_$(REL).zip HEAD
+
+
+IMG += img/compiler.png
+
+.PHONY: img
+img: $(IMG)
+
+img/%.png: img/%.dot
+	dot -Tpng -o $@ $<
