@@ -15,5 +15,3 @@ if project_home not in sys.path:
 # import flask app but need to call it "application" for WSGI to work
 
 from metaL import *
-with open('metaL.ini') as src:
-    parser.parse(src.read())
