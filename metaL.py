@@ -144,6 +144,21 @@ class Bin(Integer):
     def __init__(self, V): Primitive.__init__(self, int(V[2:], 0x02))
     def _val(self): return bin(self.val)
 
+###################################################################### container
+
+class Container(Object):
+    pass
+class Vector(Container):
+    pass
+class Dict(Container):
+    pass
+class Stack(Container):
+    pass
+class Queue(Container):
+    pass
+class Set(Container):
+    pass
+
 ######################################################################### active
 
 class Active(Object):
@@ -437,9 +452,15 @@ try:
     import uwsgi
     # https://uwsgi-docs.readthedocs.io/en/latest/PythonModule.html
     web = vm['WEB']
+
     def uwsgi_stop(ctx): uwsgi.stop()
     vm['BYE'] = Command(uwsgi_stop)
-    web['opt'] = String('%s' % uwsgi.opt)
+
+    opt = Dict('uwsgi.opt')
+    web >> opt
+    for i in uwsgi.opt:
+        opt[i] = String(uwsgi.opt[i].decode())
+
     try:
         ip, port = uwsgi.opt['socket'].decode().split(':')
         web['ip'].val = ip
