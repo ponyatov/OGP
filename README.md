@@ -1,4 +1,4 @@
-#  OGP
+#  ![logo](static/logo.png) OGP
 ## State Machine and Object Graph Programming
 
 shared project with Valeri Rakitine on the [eco-programming course](http://www.evaclick.ca/courses/course_01_eco-programming/)
@@ -7,6 +7,8 @@ shared project with Valeri Rakitine on the [eco-programming course](http://www.e
 * (c) Dmitry Ponyatov <<dponyatov@gmail.com>>
 
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ponyatov/OGP/master?filepath=OGP.ipynb)
+
+run online: https://kbase.pythonanywhere.com/
 
 #### Install (Linux)
 

@@ -382,7 +382,7 @@ def p_REPL_recursuve(p):
     ' REPL : REPL ex '
     print(p[2])
     print(p[2].eval(vm))
-    print(vm)
+    # print(vm)
     print('-' * 80)
 
 def p_ex_symbol(p):
@@ -430,8 +430,25 @@ parser = yacc.yacc(debug=False, write_tables=False)
 
 #################################################################### system init
 
+with open(__file__[:-3] + '.ini') as ini:
+    parser.parse(ini.read())
+
+try:
+    import uwsgi
+    # https://uwsgi-docs.readthedocs.io/en/latest/PythonModule.html
+    web = vm['WEB']
+    def uwsgi_stop(ctx): uwsgi.stop()
+    vm['BYE'] = Command(uwsgi_stop)
+    ip, port = uwsgi.opt['socket'].decode().split(':')
+    web['ip'].val = ip
+    web['port'].val = port
+
+except ModuleNotFoundError:
+    pass
+
+
 if __name__ == '__main__':
-    for srcfile in sys.argv[1:]:
+    for srcfile in sys.argv[2:]:
         with open(srcfile) as src:
             parser.parse(src.read())
     app.run(

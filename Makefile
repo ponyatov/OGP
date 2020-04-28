@@ -9,8 +9,15 @@ PY  = $(CWD)/bin/python3
 JPY = $(CWD)/bin/jupyter
 
 .PHONY: all
-all: $(PY) metaL.py metaL.ini
+all: wsgi
+
+.PHONY: py
+py: $(PY) metaL.py metaL.ini
 	$^
+
+.PHONY: wsgi
+wsgi: uwsgi.ini
+	uwsgi --ini $<
 
 .PHONY: jupyter
 jupyter: $(JPY)
@@ -52,6 +59,7 @@ debian:
 MERGE  = Makefile README.md .gitignore .vscode apt.txt
 MERGE += requirements.txt $(MODULE).ipynb
 MERGE += metaL.py metaL.ini static templates
+MERGE += pythonanywhere uwsgi.ini
 
 master:
 	git checkout $@

@@ -1,3 +1,4 @@
 make git
 python3 python3-venv
 graphviz
+uwsgi-plugin-python3
