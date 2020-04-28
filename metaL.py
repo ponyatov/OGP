@@ -439,9 +439,13 @@ try:
     web = vm['WEB']
     def uwsgi_stop(ctx): uwsgi.stop()
     vm['BYE'] = Command(uwsgi_stop)
-    ip, port = uwsgi.opt['socket'].decode().split(':')
-    web['ip'].val = ip
-    web['port'].val = port
+    web['opt'] = String('%s' % uwsgi.opt)
+    try:
+        ip, port = uwsgi.opt['socket'].decode().split(':')
+        web['ip'].val = ip
+        web['port'].val = port
+    except:
+        pass
 
 except ModuleNotFoundError:
     pass
