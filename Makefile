@@ -34,6 +34,11 @@ update: os $(PIP)
 	$(PIP) install -U -r requirements.txt
 	$(MAKE) requirements.txt
 
+.PHONY: anywhere
+anywhere: $(PIP)
+	git pull -v
+	$(PIP) install -r requirements.$@
+
 $(PIP) $(PY):
 	python3 -m venv .
 	$(PIP) install -U pip autopep8
