@@ -4,7 +4,7 @@
 
 def comment(text, width=80):
     print('#' * (width - len(text) - 1) + ' ' + text)
-# comment('kb: Knowledge Base engine /Python core/')#pattern matching', 60) ; sys.exit(-1)
+# comment('pytest suite for metaL.py engine')#pattern matching', 60) ; sys.exit(-1)
 
 ################################################################# system modules
 
@@ -36,6 +36,9 @@ class Object: # ex. Frame
 
     # callback for print
     def __repr__(self): return self.dump(test=True)
+
+    # special dump for tests
+    def test(self): return self.dump(test=True)
 
     # full tree dump
     def dump(self, done=None, depth=0, prefix='', test=False):

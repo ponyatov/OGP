@@ -6,10 +6,15 @@ REL = $(shell git rev-parse --short=4 HEAD)
 
 PIP = $(CWD)/bin/pip3
 PY  = $(CWD)/bin/python3
+PYT = $(CWD)/bin/pytest
 JPY = $(CWD)/bin/jupyter
 
 .PHONY: all
 all: py
+
+.PHONY: test
+test: $(PYT) test_metaL.py
+	$^
 
 .PHONY: py
 py: $(PY) metaL.py metaL.ini
