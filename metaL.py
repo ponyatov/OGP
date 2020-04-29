@@ -120,7 +120,7 @@ class Object: # ex. Frame
     # ( 1 2 3 -- 1 3 )
     def press(self): self.pip(); return self
     # ( 1 2 3 -- )
-    def dot(self): self.nest = []; return self
+    def dropall(self): self.nest = []; return self
 
     ########################################### pattern matching
 
@@ -274,7 +274,7 @@ class Email(Net, Primitive):
 ################################################################## web interface
 
 
-import flask
+import flask, flask_wtf, wtforms
 
 application = app = flask.Flask(vm.val)
 app.config['SECRET_KEY'] = os.urandom(32)
@@ -283,10 +283,17 @@ class Web(Net):
 
     def eval(self, ctx):
 
-        @app.route('/')
+        class CLI(flask_wtf.FlaskForm):
+            pad = wtforms.TextAreaField('pad',
+                                        render_kw={'rows': 5, 'autofocus': 'true'},)
+            go = wtforms.SubmitField('GO: Ctrl+Enter')
+
+        @app.route('/', methods=['GET', 'POST'])
         def index():
-            #, form=form)
-            return flask.render_template('index.html', web=self, ctx=ctx)
+            form = CLI()
+            if form.validate_on_submit():
+                parser.parse(form.pad.data)
+            return flask.render_template('index.html', web=self, ctx=ctx, form=form)
 
         @app.route('/css.css')
         def css():
@@ -298,13 +305,16 @@ class Web(Net):
         def statics(path):
             return app.send_static_file(path)
 
+        return self
+
         # app.run(
         #     host=ctx['IP'].val, port=ctx['PORT'].val,
         #     debug=True, extra_files=['metaL.ini'])
 
 def WEB(that, ctx):
     web = ctx['WEB'] = Web(that.val)
-    web << ctx['IP'] << ctx['PORT'] << ctx['LOGO']
+    web << ctx['IP'] << ctx['PORT']
+    web['logo'] = ctx['LOGO']
     return web.eval(ctx)
 
 
@@ -316,7 +326,7 @@ import ply.lex as lex
 
 tokens = ['symbol', 'string',
           'number', 'integer', 'hex', 'bin',
-          'eq', 'tick', 'push', 'lshift', 'rshift', 'colon',
+          'eq', 'tick', 'push', 'lshift', 'rshift', 'colon', 'semicol',
           'url', 'email', 'ip',
           'nl', ]
 
@@ -349,10 +359,6 @@ def t_tick(t):
     r'`'
     t.value = Op(t.value)
     return t
-def t_colon(t):
-    r':'
-    t.value = Op(t.value)
-    return t
 def t_eq(t):
     r'='
     t.value = Op(t.value)
@@ -369,6 +375,14 @@ def t_rshift(t):
     r'>>'
     t.value = Op(t.value)
     return t
+def t_colon(t):
+    r':'
+    t.value = Op(t.value)
+    return t
+def t_semicol(t):
+    r';'
+    # t.value = Op(t.value)
+    return t
 
 def t_url(t):
     r'https?://[^ \t\r\n]+'
@@ -383,13 +397,31 @@ def t_ip(t):
     t.value = IP(t.value)
     return t
 
+def t_number_dot(t):
+    r'[+\-]?[0-9]+\.[0-9]+'
+    t.type = 'number'
+    t.value = Number(t.value)
+    return t
+def t_number_expint(t):
+    r'[+\-]?[0-9]+[eE][+\-]?[0-9]+'
+    t.type = 'number'
+    t.value = Number(t.value)
+    return t
+def t_hex(t):
+    r'0x[0-9a-fA-F]+'
+    t.value = Hex(t.value)
+    return t
+def t_bin(t):
+    r'0b[01]+'
+    t.value = Bin(t.value)
+    return t
 def t_integer(t):
     r'[+\-]?[0-9]+'
     t.value = Integer(t.value)
     return t
 
 def t_symbol(t):
-    r'[^ \t\r\n\#\{\}\[\]:]+'
+    r'[^ \t\r\n\#\{\}\[\]:;]+'
     t.value = Symbol(t.value)
     return t
 
@@ -409,18 +441,23 @@ precedence = (
     ('nonassoc', 'tick', 'colon'),
 )
 
+
 def p_REPL_none(p):
     ' REPL : '
-    pass
 def p_REPL_nl(p):
     ' REPL : REPL nl '
-    pass
+def p_REPL_semicol(p):
+    ' REPL : REPL semicol '
+    vm.dropall()
 def p_REPL_recursuve(p):
     ' REPL : REPL ex '
-    print(p[2])
-    print(p[2].eval(vm))
+    x = p[2].eval(vm)
+    # if x:
+    vm // x
+    # print(p[2])
+    # print(p[2].eval(vm))
     # print(vm)
-    print('-' * 80)
+    # print('-' * 80)
 
 def p_ex_symbol(p):
     ' ex : symbol '
@@ -428,8 +465,17 @@ def p_ex_symbol(p):
 def p_ex_string(p):
     ' ex : string '
     p[0] = p[1]
+def p_ex_number(p):
+    ' ex : number '
+    p[0] = p[1]
 def p_ex_integer(p):
     ' ex : integer '
+    p[0] = p[1]
+def p_ex_hex(p):
+    ' ex : hex '
+    p[0] = p[1]
+def p_ex_bin(p):
+    ' ex : bin '
     p[0] = p[1]
 def p_ex_url(p):
     ' ex : url '
@@ -467,8 +513,10 @@ parser = yacc.yacc(debug=False, write_tables=False)
 
 #################################################################### system init
 
+
 with open(__file__[:-3] + '.ini') as ini:
     parser.parse(ini.read())
+
 
 try:
     import uwsgi

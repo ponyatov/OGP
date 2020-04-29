@@ -1,5 +1,5 @@
 <head>
-<title>{{ctx.head()}}</title>
+<title>{{ctx.head(test=True)}}</title>
 <link rel="shortcut icon" href="{{ctx['LOGO'].val}}">
 <link rel="stylesheet" href="/css.css">
 {% block head %}
@@ -9,7 +9,22 @@
 <body>
 {% block body %}
 {% endblock %}
+{% block form %}
+<form id=cli method=post onkeypress="ctrlEnter(event, this);">
+{{form.hidden_tag()}}
+{{form.pad()}}
+{{form.go()}}
+</form>
+{% endblock %}
 </body>
 
+<script>
 {% block script %}
+
+    function ctrlEnter(event, form) {
+        if ((event.ctrlKey) && ((event.keyCode == 0x0A) || (event.keyCode == 0x0D)))
+            form.go.click();
+    }
+
 {% endblock %}
+</script>

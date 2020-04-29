@@ -9,7 +9,7 @@ PY  = $(CWD)/bin/python3
 JPY = $(CWD)/bin/jupyter
 
 .PHONY: all
-all: wsgi
+all: py
 
 .PHONY: py
 py: $(PY) metaL.py metaL.ini
