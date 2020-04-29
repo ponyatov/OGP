@@ -38,6 +38,7 @@ update: os $(PIP)
 anywhere: $(PIP)
 	git pull -v
 	$(PIP) install -r requirements.$@
+	touch /var/www/kbase_pythonanywhere_com_wsgi.py
 
 $(PIP) $(PY):
 	python3 -m venv .
