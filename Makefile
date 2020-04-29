@@ -69,7 +69,7 @@ debian:
 
 MERGE  = Makefile README.md .gitignore .vscode apt.txt
 MERGE += requirements.txt $(MODULE).ipynb
-MERGE += metaL.py metaL.ini static templates
+MERGE += metaL.py test_metaL.py metaL.ini static templates
 MERGE += pythonanywhere uwsgi.ini
 MERGE += requirements.jupyter requirements.anywhere
 MERGE += img
