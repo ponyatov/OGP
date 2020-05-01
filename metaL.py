@@ -4,7 +4,7 @@
 
 def comment(text, width=80):
     print('#' * (width - len(text) - 1) + ' ' + text)
-# comment('pytest suite for metaL.py engine')#pattern matching', 60) ; sys.exit(-1)
+# comment('stack manipulation commands') ; sys.exit(-1)
 
 ################################################################# system modules
 
@@ -150,10 +150,24 @@ class Primitive(Object):
     def eval(self, ctx): return self
 
 class Symbol(Primitive):
-    def eval(self, ctx): return ctx[self.val]
+    def eval(self, ctx):
+        return ctx[self.val]
+        if isinstance(item, Command):
+            return item.eval(ctx)
+        else:
+            return item
 
 class String(Primitive):
-    pass
+    def _val(self):
+        s = ''
+        for c in self.val:
+            if c == '\n':
+                s += r'\n'
+            elif c == '\t':
+                s += r'\t'
+            else:
+                s += c
+        return s
 
 class Number(Primitive):
     def __init__(self, V): Primitive.__init__(self, float(V))
@@ -172,7 +186,8 @@ class Bin(Integer):
 ###################################################################### container
 
 class Container(Object):
-    pass
+    def eval(self, ctx): return self
+
 class Vector(Container):
     pass
 class Dict(Container):
@@ -221,11 +236,33 @@ class Op(Active):
             raise SyntaxError(self)
 
 class VM(Active):
-    pass
+
+    # vm[key] = command
+    def __setitem__(self, key, F):
+        if callable(F):
+            return Active.__setitem__(self, key, Command(F))
+        else:
+            return Active.__setitem__(self, key, F)
+
+    # vm >> command
+    def __rshift__(self, F):
+        if callable(F):
+            Active.__rshift__(self, Command(F))
+        else:
+            Active.__rshift__(self, F)
 
 
 vm = VM('metaL')
 vm << vm
+
+#################################################### stack manipulation commands
+
+vm['dup'] = lambda ctx: ctx.dup()
+vm['drop'] = lambda ctx: ctx.drop()
+vm['swap'] = lambda ctx: ctx.swap()
+vm['over'] = lambda ctx: ctx.over()
+vm['press'] = lambda ctx: ctx.press()
+vm['dropall'] = lambda ctx: ctx.dropall()
 
 ########################################################################### meta
 
@@ -308,20 +345,30 @@ class Web(Net):
         def statics(path):
             return app.send_static_file(path)
 
+        @app.route('/<path:path>', methods=['GET', 'POST'])
+        def path(path):
+            item = vm
+            for i in path.split('/'):
+                item = item[i]
+            form = CLI()
+            if form.validate_on_submit():
+                parser.parse(form.pad.data)
+            return flask.render_template('index.html', web=self, ctx=item, form=form)
+
         return self
 
         # app.run(
         #     host=ctx['IP'].val, port=ctx['PORT'].val,
         #     debug=True, extra_files=['metaL.ini'])
 
-def WEB(that, ctx):
-    web = ctx['WEB'] = Web(that.val)
+def WEB(ctx):
+    web = ctx['WEB'] = Web(ctx.val)
     web << ctx['IP'] << ctx['PORT']
     web['logo'] = ctx['LOGO']
     return web.eval(ctx)
 
 
-vm >> Command(WEB)
+vm >> WEB
 
 ########################################################################## lexer
 
@@ -331,7 +378,8 @@ tokens = ['symbol', 'string',
           'number', 'integer', 'hex', 'bin',
           'eq', 'tick', 'push', 'lshift', 'rshift', 'colon', 'semicol',
           'url', 'email', 'ip',
-          'nl', ]
+          'nl', 'end', 'q', 'qq',
+          'lp', 'rp', 'lq', 'rq', 'lc', 'rc']
 
 t_ignore = ' \t\r'
 t_ignore_comment = r'\#.*'
@@ -349,6 +397,12 @@ def t_str_string(t):
     t.lexer.pop_state()
     t.value = String(t.lexer.string)
     return t
+def t_str_nl(t):
+    r'\n'
+    t.lexer.string += t.value
+def t_str_escaped(t):
+    r'\\.'
+    t.lexer.string += t.value[1]
 def t_str_char(t):
     r'.'
     t.lexer.string += t.value
@@ -357,6 +411,24 @@ def t_nl(t):
     r'\n'
     t.lexer.lineno += 1
     return t
+
+def t_qq(t):
+    r'\?\?'
+    return t
+def t_q(t):
+    r'\?'
+    return t
+def t_end(t):
+    r'\.end'
+    return t
+
+
+t_lp = r'\('
+t_rp = r'\)'
+t_lq = r'\['
+t_rq = r'\]'
+t_lc = r'\{'
+t_rc = r'\}'
 
 def t_tick(t):
     r'`'
@@ -433,7 +505,7 @@ def t_ANY_error(t): raise SyntaxError(t)
 
 lexer = lex.lex()
 
-######################################################################### parser
+############################################################# parser/interpreter
 
 import ply.yacc as yacc
 
@@ -447,6 +519,16 @@ precedence = (
 
 def p_REPL_none(p):
     ' REPL : '
+def p_REPL_q(p):
+    ' REPL : REPL q '
+    print(vm)
+def p_REPL_qq(p):
+    ' REPL : REPL qq '
+    print(vm)
+    sys.exit(0)
+def p_REPL_end(p):
+    ' REPL : REPL end '
+    sys.exit(0)
 def p_REPL_nl(p):
     ' REPL : REPL nl '
 def p_REPL_semicol(p):
@@ -454,9 +536,12 @@ def p_REPL_semicol(p):
     vm.dropall()
 def p_REPL_recursuve(p):
     ' REPL : REPL ex '
-    x = p[2].eval(vm)
-    # if x:
-    vm // x
+    result = p[2].eval(vm)
+    if isinstance(result, Command):
+        result = result.eval(vm)
+    else:
+        if result:
+            vm // result
     # print(p[2])
     # print(p[2].eval(vm))
     # print(vm)
@@ -494,7 +579,7 @@ def p_ex_tick(p):
     ' ex : tick ex '
     p[0] = p[1] // p[2]
 def p_ex_colon_ex(p):
-    ' ex : symbol colon ex '
+    ' ex : ex colon ex '
     p[0] = p[2] // p[1] // p[3]
 def p_ex_eq(p):
     ' ex : ex eq ex '
@@ -508,6 +593,22 @@ def p_ex_lshift(p):
 def p_ex_rshift(p):
     ' ex : ex rshift ex '
     p[0] = p[2] // p[1] // p[3]
+
+def p_ex_parens(p):
+    ' ex : lp ex rp '
+    p[0] = p[2]
+
+
+def p_ex_vector_named(p):
+    ' ex : symbol lq vector rq '
+    p[3].val = p[1].val
+    p[0] = p[3]
+def p_ex_vector(p):
+    ' ex : lq vector rq '
+    p[0] = p[2]
+def p_vector(p):
+    ' vector : '
+    p[0] = Vector('')
 
 def p_error(p): raise SyntaxError(p)
 
