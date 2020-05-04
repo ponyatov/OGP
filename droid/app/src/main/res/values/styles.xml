@@ -1,11 +1,14 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorToolbar</item>
+<!--        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <item name="colorAccent">@color/colorAddButton</item>
+        <item name="android:background">@color/colorBackground</item>
+        <item name="android:foreground">@color/colorForeground</item>
+        <item name="android:textColor">@color/TextColor</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -15,6 +18,14 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark">
+        <item name="android:background">@color/MenuBackground</item>
+        <item name="android:textColor">@color/MenuText</item>
+    </style>
+
+    <style name="Button" parent="ThemeOverlay.AppCompat.Dark">
+<!--        <item name="colorControlHighlight">@color/ButtonBackground</item>-->
+        <item name="android:textColor">@color/ButtonText</item>
+    </style>
 
 </resources>

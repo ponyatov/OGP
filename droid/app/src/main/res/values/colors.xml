@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+<!--    <color name="colorPrimary">#6200EE</color>-->
+<!--    <color name="colorPrimaryDark">#3700B3</color>-->
+<!--    <color name="colorAccent">#007</color>-->
+    <color name="colorToolbar">#014</color>
+    <color name="colorBackground">#000</color>
+    <color name="colorAddButton">#024</color>
+    <color name="colorForeground">#AAA</color>
+    <color name="TextColor">#0F7</color>
+    <color name="MenuBackground">#023</color>
+    <color name="MenuText">#FFF</color>
+    <color name="ButtonBackground">#277</color>
+    <color name="ButtonText">@android:color/holo_orange_light</color>
 </resources>
