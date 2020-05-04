@@ -4,12 +4,12 @@
 
 def comment(text, width=80):
     print('#' * (width - len(text) - 1) + ' ' + text)
-# comment('stack manipulation commands') ; sys.exit(-1)
+# comment('documenting')#,65) ; sys.exit(-1)
 
 ################################################################# system modules
 
-
 import os, sys
+from markdown import markdown
 
 ############################################################# object graph types
 
@@ -139,6 +139,11 @@ class Object: # ex. Frame
     def apply(self, that, ctx):
         raise TypeError(Error('apply') // self // that // ctx)
 
+    ########################################## represent in html form
+
+    def html(self):
+        return '<pre>\n%s</pre>\n' % self.dump()
+
 ############################################################### error processing
 
 class Error(Object):
@@ -158,6 +163,7 @@ class Symbol(Primitive):
             return item
 
 class String(Primitive):
+
     def _val(self):
         s = ''
         for c in self.val:
@@ -168,6 +174,8 @@ class String(Primitive):
             else:
                 s += c
         return s
+
+    def html(self): return markdown(self.val, extensions=['extra'])
 
 class Number(Primitive):
     def __init__(self, V): Primitive.__init__(self, float(V))
@@ -189,7 +197,12 @@ class Container(Object):
     def eval(self, ctx): return self
 
 class Vector(Container):
-    pass
+    def html(self):
+        ht = ''
+        for j in self.nest:
+            ht += j.html()
+        return ht
+
 class Dict(Container):
     pass
 class Stack(Container):
@@ -311,6 +324,14 @@ class URL(Net, Primitive):
 class Email(Net, Primitive):
     pass
 
+#################################################################### documenting
+
+class Doc(Object):
+    pass
+
+class HTML(Doc):
+    def html(self): return self.val
+
 ################################################################## web interface
 
 
@@ -344,6 +365,13 @@ class Web(Net):
         @app.route('/static/<path:path>')
         def statics(path):
             return app.send_static_file(path)
+
+        @app.route('/<path:path>.html')
+        def tohtml(path):
+            item = vm
+            for i in path.split('/'):
+                item = item[i]
+            return flask.render_template('html.html', web=self, ctx=item)
 
         @app.route('/<path:path>', methods=['GET', 'POST'])
         def path(path):

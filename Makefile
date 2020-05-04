@@ -36,13 +36,14 @@ install: os $(PIP)
 .PHONY: update
 update: os $(PIP)
 	git pull
+	$(PIP) install -U    pip
 	$(PIP) install -U -r requirements.txt
 	$(MAKE) requirements.txt
 
 .PHONY: anywhere
 anywhere: $(PIP)
 	git pull -v
-	$(PIP) install -r requirements.$@
+	$(PIP) install -r pythonanywhere/requirements.txt
 	$(MAKE) test
 	touch /var/www/kbase_pythonanywhere_com_wsgi.py
 
@@ -69,10 +70,9 @@ debian:
 .PHONY: master shadow release zip
 
 MERGE  = Makefile README.md .gitignore .vscode apt.txt
-MERGE += requirements.txt $(MODULE).ipynb
+MERGE += requirements.txt requirements.jupyter $(MODULE).ipynb
 MERGE += metaL.py test_metaL.py metaL.ini static templates
 MERGE += pythonanywhere uwsgi.ini
-MERGE += requirements.jupyter requirements.anywhere
 MERGE += img
 MERGE += droid
 
