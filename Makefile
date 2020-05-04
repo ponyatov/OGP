@@ -74,6 +74,7 @@ MERGE += metaL.py test_metaL.py metaL.ini static templates
 MERGE += pythonanywhere uwsgi.ini
 MERGE += requirements.jupyter requirements.anywhere
 MERGE += img
+MERGE += droid
 
 master:
 	git checkout $@

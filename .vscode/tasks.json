@@ -4,15 +4,15 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "echo",
+            "label": "jupyter",
             "type": "shell",
-            "command": "echo Hello",
+            "command": "make jupyter",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
-        },
+       },
         {
             "label": "uwsgi",
             "type": "shell",
