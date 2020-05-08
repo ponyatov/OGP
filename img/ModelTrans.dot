@@ -1,0 +1,10 @@
+digraph {
+    rankdir = LR;
+    s -> g [label="acquire semantics:\nload relations between objects\nand concepts"];
+    g -> t [label="model compiler:\ngeneration of source code\nor declarative specification"];
+    g -> g [label="model transformations:\noptimization, validation,\ntype checking"];
+    s [label="source model:\nlegacy source code\ndomain knowledge",shape=rect];
+    g [label="frame\ngraph"];
+    t [label="target model:\nsome programing language stack,\nor formal system description",shape=rect];
+    t -> s [label="optional: legacy code refurbish",style=dashed];
+}

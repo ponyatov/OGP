@@ -93,6 +93,7 @@ zip:
 
 
 IMG += img/compiler.png
+IMG += img/ModelTrans.png
 
 .PHONY: img
 img: $(IMG)
